@@ -13,6 +13,8 @@ import _pickle as cPickle
 
 app = Flask(__name__)
 
+app.secret_key = 'your secret key'
+
 server = 'mysqlserver-rv.database.windows.net'
 username = 'azureuser'
 password = 'Mavbgl@656'
@@ -23,6 +25,7 @@ dir_path = os.path.dirname(os.path.realpath(__file__)) + '/tmp'
 print(dir_path)
 UPLOAD_FOLDER = dir_path
 ALLOWED_EXTENSIONS = set(['txt', 'csv'])
+
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 #redisdnsrv.redis.cache.windows.net:6380,password=ukD7wIFSxdFcJoGn8RBsP8mZ7ncNYxrdLAzCaEUbX0E=,ssl=True,abortConnect=False
@@ -207,4 +210,4 @@ def selectBQuery():
 
 # port = os.getenv('PORT', '8787')
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=8587)
+    app.run(host='0.0.0.0', port=8587, debug=True)
