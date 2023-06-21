@@ -6,7 +6,6 @@ import time, csv
 from werkzeug.utils import secure_filename
 import pandas as pd
 import redis
-import _pickle as cPickle
 
 # import redis, hashlib, datetime
 # import json
@@ -27,10 +26,10 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 #redisdnsrv.redis.cache.windows.net:6380,password=ukD7wIFSxdFcJoGn8RBsP8mZ7ncNYxrdLAzCaEUbX0E=,ssl=True,abortConnect=False
 #roopamdns.redis.cache.windows.net:6380,password=UKpCfgBxKqwBwPo53Rjn7HNA7kl5JJaIjAzCaEuT3pg=,ssl=True,abortConnect=False
-red = redis.StrictRedis(host='roopamdns.redis.cache.windows.net',port=6380, db=0, password='UKpCfgBxKqwBwPo53Rjn7HNA7kl5JJaIjAzCaEuT3pg=', ssl=True)
-#host=rds_hostname
-result = red.ping()
-print("Ping returned : " + str(result))
+# red = redis.StrictRedis(host='redisdnsrv.redis.cache.windows.net',port=6380, db=0, password='ukD7wIFSxdFcJoGn8RBsP8mZ7ncNYxrdLAzCaEUbX0E=', ssl=True)
+# #host=rds_hostname
+# result = red.ping()
+# print("Ping returned : " + str(result))
 
 # conn = pyodbc.Connect(user=username, passwd=password, port=3306, local_infile=True, charset='utf8',
 #                        cursorclass=pymysql.cursors.DictCursor)
@@ -183,25 +182,17 @@ def selectBQuery():
 
     # print("MAG1",type(mag1).__name__)
     # print("MAG2",type(mag1).__name__)
-    print(mag1,mag2)
+    # print(mag1,mag2)
+
+    #cursor.execute('''SELECT time,latitude, longitude, mag, place FROM [dbo].[demo_data] where mag>='2' and mag <'5';''')
     query = "select time, latitude, longitude, mag, place from demo_data where mag >= '" + mag1 + "' and mag < '" + mag2 +"';"
     print(query)
     start_time = time.time()
-    #result = red.get('selectBQuery'+mag1+mag2)
-    if red.get('selectBQuery'+mag1+mag2):
-        result = cPickle.loads(red.get('selectBQuery'+mag1+mag2))
-        end_time = time.time()
-        time_taken = end_time-start_time
-        print("returned from cache....", result)
-    #cursor.execute('''SELECT time,latitude, longitude, mag, place FROM [dbo].[demo_data] where mag>='2' and mag <'5';''')
-    else:
-        start_time = time.time()
-        cursor.execute(query)
-        end_time = time.time()
-        result = cursor.fetchall()
-        time_taken = end_time-start_time
-        print("Inside....")
-        red.set('selectBQuery'+mag1+mag2,cPickle.dumps(result))
+    cursor.execute(query)
+    end_time = time.time()
+    result = cursor.fetchall()
+    time_taken = end_time-start_time
+    print(result)
     return render_template('query2.html', tableData=result , time_taken = time_taken , query = query)
 
 

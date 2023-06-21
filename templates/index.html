@@ -28,10 +28,24 @@
 	      <input type="submit" value="Create DB">
     	</form>
     <br>
-    <a href="/query1">Query1</a>
-    <a href="/query2">Query2</a>
+    <button type="submit" value="Query1"><a href="/query1">Query1</a></button>
+    <!-- <a href="/query2">Query2</a> -->
  
 </div>
+
+<div class="container">
+    <form action = "/selectBQuery" method="POST" enctype="multipart/form-data">
+        
+            <label for="mag1">Enter min Magnitude: </label>
+            <input type="text" value="" id="mag1" name="mag1"><br><br>
+        
+            <label for="mag2">Enter min Magnitude: </label>
+            <input type="text" value="" id="mag2" name="mag2"><br><br>
+        
+            <button type="submit" value="Query2">Query2</button>
+
+</div>
+
 
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
