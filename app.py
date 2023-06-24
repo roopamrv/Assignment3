@@ -167,13 +167,20 @@ def query1():
     cursor.execute(query)
     result = cursor.fetchall()
     start_time = time.time()
-    cursor.execute('SELECT * from demo_data;')
-    end_time = time.time()
-    result1 = cursor.fetchall()
-    time_taken = end_time-start_time
-
+    if red.get('query1'):
+        result1 = cPickle.loads(red.get('query1'))
+        end_time = time.time()
+        time_taken = end_time-start_time
+        print("returned from cache....", result1)
+    else:
+        start_time = time.time()
+        cursor.execute('SELECT * from demo_data;')
+        end_time = time.time()
+        result1 = cursor.fetchall()
+        time_taken = end_time-start_time
+        red.set('query1',cPickle.dumps(result1))
     #print(result)
-    return render_template('query1.html', tabledata= result, tabdat = result1, time_taken=time_taken, query = query)
+    return render_template('query1.html', tablerows= result, tabdat = result1, time_taken=time_taken, query = query)
 
 @app.route('/query2', methods=['GET'])
 def query2():
