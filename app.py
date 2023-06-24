@@ -7,6 +7,7 @@ from werkzeug.utils import secure_filename
 import pandas as pd
 import redis
 import _pickle as cPickle
+import random
 
 # import redis, hashlib, datetime
 # import json
@@ -76,34 +77,6 @@ def upload():
 
     return '<h1>Unsuccesfull</h1>'
 
-# @app.route('/query2', methods=['GET'])
-# def query2():
-#     return render_template('query2.html')
-
-# @app.route('/selectBQuery', methods=['POST'])
-# def selectBQuery():
-#     print(request.form.get('state'))
-#     print(request.form.get('total'))
-#     cursor.execute('select alias from testdb.uc_data where STATE like \'%' + request.form.get('state') + '\' and TOT_ENROLL < '+request.form.get('total')+';')
-#     result = cursor.fetchall()
-#     print(result)
-#     return render_template('query2.html', tableData=result)
-
-# @app.route('/query1', methods=['GET'])
-# def query1():
-#     return render_template('table_1.html')
-
-# @app.route('/selectQuery', methods=['POST'])
-# def selectQuery():
-#     print(request.form.get('state'))
-#     cursor.execute(
-#         'SELECT * FROM testdb.uc_data where STATE like \'%' + request.form.get('state') + '\';')
-#     result = cursor.fetchall()
-#     cursor.execute('SELECT count(*) FROM testdb.uc_data where STATE like \'%' + request.form.get('state') + '\';')
-#     result2 = cursor.fetchall()
-
-#     return render_template('table_1.html', tableData=result, rows=result2[0]['count(*)'])
-
 @app.route('/createDB', methods=['GET'])
 def createDB():
     file_name = 'tmp/all_month.csv'
@@ -166,21 +139,30 @@ def query1():
     query = 'SELECT count(*) FROM demo_data;'
     cursor.execute(query)
     result = cursor.fetchall()
+
+    myquerylist = ['SELECT * from demo_data;', 'SELECT time, latitude, longitude from demo_data;', 
+                   'SELECT mag from demo_data;','SELECT latitude from demo_data;','SELECT longtitude from demo_data;',
+                   'SELECT latitude, longitude from demo_data;',
+                   'SELECT time, latitude, longitude from demo_data;',
+                   'SELECT latitude, mag, longitude from demo_data;']
+    
+    myquery = random.randrange(0,len(myquerylist))
     start_time = time.time()
+
     if red.get('query1'):
-        result1 = cPickle.loads(red.get('query1'))
+        result1 = cPickle.loads(red.get('query1'+myquerylist[myquery]))
         end_time = time.time()
         time_taken = end_time-start_time
         print("returned from cache....", result1)
     else:
         start_time = time.time()
-        cursor.execute('SELECT * from demo_data;')
+        cursor.execute(myquerylist[myquery])
         end_time = time.time()
         result1 = cursor.fetchall()
         time_taken = end_time-start_time
-        red.set('query1',cPickle.dumps(result1))
+        red.set('query1'+myquerylist[myquery],cPickle.dumps(result1))
     #print(result)
-    return render_template('query1.html', tablerows= result, tabdat = result1, time_taken=time_taken, query = query)
+    return render_template('query1.html', tablerows= result, tabdat = result1, myquery = myquerylist[myquery], time_taken=time_taken, query = query)
 
 @app.route('/query2', methods=['GET'])
 def query2():
